@@ -1,0 +1,28 @@
+INSTRUCCIONES:
+Ejecutar comparacion.m en Matlab con los archivos en esta carpeta.\
+
+RESULTADOS:
+Realizando multiples ensayos con multiples tamaños de C-space, se encontró que usualmente (por no decir siempre):
+——————————————
+Ranking:
+————-
+Tiempo (de menor a mayor)
+
+1. Primero voraz
+2. Primero mejor
+3. A*
+4. Stochastic Hill Climbing
+5. Simulated Annealing
+6. Random Search
+—————
+Distancia (de menor a mayor)
+
+1. Primero Voraz & A*
+2. Stochastic Hill Climbing
+3. Random Search & Simulated Annealing
+4. Primero Mejor
+——————————————
+Análisis:
+- A* y Primero Voraz son los mejores métodos ya que por lo general encuentran la mejor solución y en el mejor tiempo, siendo primero voraz la primera opción ya que es la que menos tarda en converger.
+- Los métodos estocasticos (Random search, simulated annealing, y Stochastic hill climbing) no son ideales ya que en promedio tardan más en converger y encuentran una solución menos optima que A* y Primero Voraz.
+- Primero mejor, aunque tarda menos en converger que otros métodos, encuentra una solución muy poco optima y por lo tanto no es aconsejable.

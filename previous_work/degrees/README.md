@@ -1,0 +1,2 @@
+# Degrees
+Contains the code for finding the degree of separation between two actors in the [IMDb dataset](https://www.imdb.com/interfaces/) using the [Breadth-First Search](https://en.wikipedia.org/wiki/Breadth-first_search) algorithm.

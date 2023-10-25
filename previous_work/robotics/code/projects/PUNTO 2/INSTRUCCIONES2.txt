@@ -1,0 +1,9 @@
+1. Las ecuaciones de cinemática directa se encuentran en el archivo cinematica.m en la carpeta de FUNCIONES. Acá también se encuentras las otras funciones utilizadas para el numeral 2, como por ejemplo el algoritmo de búsqueda. En la carpetas CASAS se encuentra la función para calcular la trayectoria de cada una de las casas, utilizando las ecuaciones de cada una de las figuras.
+
+2. En el archivo cspace_trayectoria se encuentra el punto b, c, y d. Aca se puede observar el C-space con los obstáculos. También se muestra como se encuentra la trayectoria a partir del algoritmo de búsqueda primero voraz. 
+
+3. En el archivo SIMULACION2.slx se observa la simulación con simscape, que también queda demostrada en el video PUNTO2.mp4. Para que corra la simulación es necesario subir la ubicación del STL correspondiente a cada objeto, ya que esta cambia con cada PC.
+
+*La explicación del código de las casas solo esta en la lemniscata ya que es igual para todas.
+
+*Si sale un error es porque debe agregar todas las carpetas al path.
