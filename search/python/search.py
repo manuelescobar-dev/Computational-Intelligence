@@ -5,10 +5,11 @@ from typing import Any
 
 
 class Node:
-    def __init__(self, state, parent, action):
+    def __init__(self, state, parent, action, cost):
         self.state = state
         self.parent = parent
         self.action = action
+        self.cost = cost
 
 
 class StackFrontier:
@@ -39,12 +40,12 @@ class PrioritizedItem:
 
 
 class PriorityFrontier:
-    def __init__(self, heuristic=(lambda x: 0)):
-        self.heuristic = heuristic
+    def __init__(self, priority_function=(lambda x: 0)):
+        self.priority_function = priority_function
         self.frontier = PriorityQueue()
 
     def add(self, node):
-        item = PrioritizedItem(self.heuristic(node.state), node)
+        item = PrioritizedItem(self.priority_function(node), node)
         self.frontier.put(item)
 
     def contains_state(self, state):
@@ -90,27 +91,52 @@ class Search:
     def results(self):
         raise NotImplementedError
 
-    def is_goal(self, state, goal):
-        return state == goal
+    def is_goal(self, state):
+        return state == self.goal
 
     def solution_format(self, actions):
         return actions
 
-    def heuristic(self):
-        return lambda x: 0
+    def priority_function(self, strategy):
+        if strategy == "ucs":
+            return self.g
+        elif strategy == "greedy":
+            return self.h
+        elif strategy == "astar":
+            return lambda x: self.g(x) + self.h(x)
+        else:
+            return lambda x: 0
+
+    def h(self, node):
+        return 0
+
+    def g(self, node):
+        return node.cost
+
+    def action_cost(self, state, action):
+        return 1
 
     def solve(self, start, goal, strategy="bfs"):
+        self.goal = goal
         # Keep track of number of states explored
         self.num_explored = 0
 
         # Initialize frontier to just the starting position
-        start = Node(state=start, parent=None, action=None)
+        start = Node(state=start, parent=None, action=None, cost=0)
         if strategy == "bfs":
             frontier = BreadthFirstSearch()
         elif strategy == "dfs":
             frontier = DepthFirstSearch()
         elif strategy == "ucs":
-            frontier = PriorityFrontier(self.heuristic)
+            frontier = PriorityFrontier(self.priority_function(strategy))
+        elif strategy == "greedy":
+            frontier = PriorityFrontier(self.priority_function(strategy))
+        elif strategy == "astar":
+            frontier = PriorityFrontier(self.priority_function(strategy))
+        else:
+            raise Exception(
+                "Invalid strategy. Choose from bfs, dfs, ucs, greedy, astar"
+            )
         frontier.add(start)
 
         # Initialize an empty explored set
@@ -127,7 +153,8 @@ class Search:
             self.num_explored += 1
 
             # If node is the goal, then we have a solution
-            if self.is_goal(node.state, goal):
+            if self.is_goal(node.state):
+                self.solution_cost = node.cost
                 actions = []
                 while node.parent is not None:
                     actions.append(node.action)
@@ -140,11 +167,16 @@ class Search:
             self.explored.add(str(node.state))
 
             # Add actions to frontier
-            for action in self.actions(node.state, goal):
+            for action in self.actions(node.state):
                 state = self.results(node.state, action)
                 if (
                     not frontier.contains_state(state)
                     and str(state) not in self.explored
                 ):
-                    child = Node(state=state, parent=node, action=action)
+                    child = Node(
+                        state=state,
+                        parent=node,
+                        action=action,
+                        cost=node.cost + self.action_cost(node.state, action),
+                    )
                     frontier.add(child)
