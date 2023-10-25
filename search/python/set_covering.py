@@ -7,7 +7,7 @@ class Example(Search):
     state: set of indices
     """
 
-    def is_goal(self, state, goal):
+    def is_goal(self, state):
         total = 0
         length = len(self.space[0])
         for i in range(length):
@@ -20,17 +20,17 @@ class Example(Search):
         else:
             return False
 
-    def heuristic(self, state):
+    def h(self, node):
         total = 0
         length = len(self.space[0])
         for i in range(length):
-            for j in state:
+            for j in node.state:
                 if self.space[j][i]:
                     total += 1
                     break
         return length - total
 
-    def actions(self, state, goal):
+    def actions(self, state):
         """Return the actions that can be executed in the given state."""
         actions = []
         for i in range(len(self.space)):
@@ -62,10 +62,21 @@ def generate_random_space(set_number, problem_size, probability):
     return space
 
 
-space = generate_random_space(6, 5, 0.3)
+space = generate_random_space(20, 20, 0.1)
 print(space)
 m = Example(space)
 
+m.solve(set(), None, "bfs")
+print("BFS:", m.num_explored)
+
+m.solve(set(), None, "dfs")
+print("DFS:", m.num_explored)
 
 m.solve(set(), None, "ucs")
-print(m.solution)
+print("UCS:", m.num_explored)
+
+m.solve(set(), None, "greedy")
+print("Greedy:", m.num_explored)
+
+m.solve(set(), None, "astar")
+print("A*:", m.num_explored)
