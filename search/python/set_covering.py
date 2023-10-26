@@ -1,8 +1,12 @@
 import random
-from search import Search
+import sys
+
+sys.path.append("../../")
+from lib.comparison import comparison
+from lib.search import Search
 
 
-class Example(Search):
+class SetCovering(Search):
     """
     state: set of indices
     """
@@ -19,16 +23,6 @@ class Example(Search):
             return True
         else:
             return False
-
-    def h(self, node):
-        total = 0
-        length = len(self.space[0])
-        for i in range(length):
-            for j in node.state:
-                if self.space[j][i]:
-                    total += 1
-                    break
-        return length - total
 
     def actions(self, state):
         """Return the actions that can be executed in the given state."""
@@ -52,31 +46,29 @@ class Example(Search):
         return new_state
 
 
-def generate_random_space(set_number, problem_size, probability):
-    space = []
-    for i in range(set_number):
-        set = []
-        for j in range(problem_size):
-            set.append(random.random() < probability)
-        space.append(set)
-    return space
+def generate_random_space(set_number, problem_shape, probability, return_numpy=False):
+    matrix = [
+        [random.random() < probability for i in range(problem_shape)]
+        for j in range(set_number)
+    ]
+    return matrix
 
 
-space = generate_random_space(20, 20, 0.1)
-print(space)
-m = Example(space)
+space = generate_random_space(15, 15, 0.3)
+m = SetCovering(space)
 
-m.solve(set(), None, "bfs")
-print("BFS:", m.num_explored)
 
-m.solve(set(), None, "dfs")
-print("DFS:", m.num_explored)
+def h(self, node):
+    total = 0
+    length = len(self.space[0])
+    for i in range(length):
+        for j in node.state:
+            if self.space[j][i]:
+                total += 1
+                break
+    return length - total
 
-m.solve(set(), None, "ucs")
-print("UCS:", m.num_explored)
 
-m.solve(set(), None, "greedy")
-print("Greedy:", m.num_explored)
-
-m.solve(set(), None, "astar")
-print("A*:", m.num_explored)
+comparison(
+    m, set(), ["bfs", "dfs", "greedy", "astar"], heuristics=[(h, "Remaining True cols")]
+)

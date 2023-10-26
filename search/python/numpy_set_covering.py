@@ -1,11 +1,15 @@
 import random
-from search import Search
+import sys
 import numpy as np
 
+sys.path.append("../../")
+from lib.comparison import comparison
+from lib.search import Search
 
-class Example(Search):
+
+class NumpySetCovering(Search):
     """
-    state: set of indices
+    state: [list of indices]
     """
 
     def is_goal(self, state):
@@ -17,16 +21,10 @@ class Example(Search):
         else:
             return False
 
-    def h(self, node):
-        total = 0
-        length = self.space.shape[1]
-        total = np.any(self.space[node.state, :], axis=0).sum()
-        return length - total
-
     def actions(self, state):
         """Return the actions that can be executed in the given state."""
         actions = []
-        for i in range(self.space.shape[1]):
+        for i in range(self.space.shape[0]):
             if i not in state:
                 actions.append(i)
         return actions
@@ -45,6 +43,13 @@ class Example(Search):
         return new_state
 
 
+def h(self, node):
+    total = 0
+    length = self.space.shape[1]
+    total = np.any(self.space[node.state, :], axis=0).sum()
+    return length - total
+
+
 def generate_random_space(set_number, problem_shape, probability):
     return np.array(
         [
@@ -54,21 +59,9 @@ def generate_random_space(set_number, problem_shape, probability):
     )
 
 
-space = generate_random_space(20, 20, 0.4)
-print(space)
-m = Example(space)
+space = generate_random_space(15, 15, 0.4)
+m = NumpySetCovering(space)
 
-m.solve([], None, "bfs")
-print("BFS -->", "Explored:", m.num_explored, " | Solution:", m.solution)
-
-m.solve([], None, "dfs")
-print("DFS -->", "Explored:", m.num_explored, " | Solution:", m.solution)
-
-m.solve([], None, "ucs")
-print("UCS -->", "Explored:", m.num_explored, " | Solution:", m.solution)
-
-m.solve([], None, "greedy")
-print("Greedy -->", "Explored:", m.num_explored, " | Solution:", m.solution)
-
-m.solve([], None, "astar")
-print("A* -->", "Explored:", m.num_explored, " | Solution:", m.solution)
+comparison(
+    m, [], ["bfs", "dfs", "greedy", "astar"], heuristics=[(h, "Remaining True cols")]
+)

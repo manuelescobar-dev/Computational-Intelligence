@@ -97,26 +97,10 @@ class Search:
     def solution_format(self, actions):
         return actions
 
-    def priority_function(self, strategy):
-        if strategy == "ucs":
-            return self.g
-        elif strategy == "greedy":
-            return self.h
-        elif strategy == "astar":
-            return lambda x: self.g(x) + self.h(x)
-        else:
-            return lambda x: 0
-
-    def h(self, node):
-        return 0
-
-    def g(self, node):
-        return node.cost
-
     def action_cost(self, state, action):
         return 1
 
-    def solve(self, start, goal, strategy="bfs"):
+    def solve(self, start, goal, strategy="bfs", h=None, g=None):
         self.goal = goal
         # Keep track of number of states explored
         self.num_explored = 0
@@ -128,11 +112,20 @@ class Search:
         elif strategy == "dfs":
             frontier = DepthFirstSearch()
         elif strategy == "ucs":
-            frontier = PriorityFrontier(self.priority_function(strategy))
+            frontier = PriorityFrontier(lambda x: x.cost)
         elif strategy == "greedy":
-            frontier = PriorityFrontier(self.priority_function(strategy))
+            if h is None:
+                raise Exception("Heuristic required for greedy search")
+            else:
+                frontier = PriorityFrontier(lambda x: h(self, x))
         elif strategy == "astar":
-            frontier = PriorityFrontier(self.priority_function(strategy))
+            if g is not None and h is not None:
+                frontier = PriorityFrontier(lambda x: g(self, x) + h(self, x))
+            else:
+                if h is None:
+                    raise Exception("Heuristic required for greedy search")
+                else:
+                    frontier = PriorityFrontier(lambda x: x.cost + h(self, x))
         else:
             raise Exception(
                 "Invalid strategy. Choose from bfs, dfs, ucs, greedy, astar"
