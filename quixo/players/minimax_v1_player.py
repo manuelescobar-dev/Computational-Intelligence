@@ -54,6 +54,7 @@ class MinimaxPlayerV1(Player):
         return "Minimax Player V1"
 
     def make_move(self, game: "Game") -> tuple[tuple[int, int], Move]:
+        """Makes a move"""
         board = game.get_board()
         player = game.get_current_player()
         return self.minimax(player, board)
@@ -86,11 +87,14 @@ class MinimaxPlayerV1(Player):
 
     def max_v(self, board: np.ndarray, alpha, beta, depth: int, player: int):
         """Max value function"""
+        # Check if the game is over
         winner = self.check_winner(board)
         if depth == 0 or winner >= 0:
             return self.utility(winner)
+        # Find the max value for each possible action
         v = float("-inf")
         for action in self.possible_actions(board, player):
+            # Find the max between the current value and the min value of the next state
             v = max(
                 v,
                 self.min_v(
@@ -101,18 +105,23 @@ class MinimaxPlayerV1(Player):
                     1 - player,
                 ),
             )
+            # Update alpha
             alpha = max(alpha, v)
+            # Prune
             if alpha >= beta:
                 break
         return v
 
     def min_v(self, board, alpha, beta, depth, player):
         """Min value function"""
+        # Check if the game is over
         winner = self.check_winner(board)
         if depth == 0 or winner >= 0:
             return self.utility(winner)
+        # Find the min value for each possible action
         v = float("inf")
         for action in self.possible_actions(board, player):
+            # Find the min between the current value and the max value of the next state
             v = min(
                 v,
                 self.max_v(
@@ -123,7 +132,9 @@ class MinimaxPlayerV1(Player):
                     1 - player,
                 ),
             )
+            # Update beta
             beta = min(beta, v)
+            # Prune
             if alpha >= beta:
                 break
         return v
@@ -138,9 +149,12 @@ class MinimaxPlayerV1(Player):
         Returns:
             tuple[tuple[int, int], Move]: Action (from_pos, move)
         """
+
+        # If player 1, find the max value
         if player == 1:
             v = float("-inf")
             best_action = None
+            # Find the best action
             for action in self.possible_actions(board, player):
                 new_v = self.min_v(
                     self.result(deepcopy(board), action, player),
@@ -149,14 +163,17 @@ class MinimaxPlayerV1(Player):
                     self.depth - 1,
                     1 - player,
                 )
+                # Found a better action
                 if new_v > v:
                     v = new_v
                     best_action = action
             return best_action
 
+        # If player 0, find the min value
         elif player == 0:
             v = float("inf")
             best_action = None
+            # Find the best action
             for action in self.possible_actions(board, player):
                 new_v = self.max_v(
                     self.result(deepcopy(board), action, player),
@@ -165,6 +182,7 @@ class MinimaxPlayerV1(Player):
                     self.depth - 1,
                     1 - player,
                 )
+                # Found a better action
                 if new_v < v:
                     v = new_v
                     best_action = action
