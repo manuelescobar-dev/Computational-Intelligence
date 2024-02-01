@@ -29,5 +29,10 @@ For detailed information about the repository, please refer to the [log](log.md)
   - `env`: set of instructions to create an environment.
   - `lib`: library for search algorithms.
   - `previous_work`: previous work done on the computational intelligence field.
-- `log.md`: log of the work done during the course.
+- `labs`: laboratory sessions.
+  - `lab1`: Set-Covering problem with search algorithms (DFS, BFS, UCS, A*)
+  - `lab2`: Nim strategy with ES.
+  - `lab9`: Evolutionary Algorithms.
+  - `lab10`: Tic-Tac-Toe with Minimax and Reinforcement Learning.
+- `quixo`: Quixo game with Minimax and Reinforcement Learning.
 
